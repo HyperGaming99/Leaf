@@ -33,7 +33,9 @@ public class Globals {
         STRONGHOLDS,
         POPULATION,
         DECORATION,
-        SLIME_CHUNK
+        SLIME_CHUNK,
+        // The ordinal is hashed into the random stream, only append here, never reorder
+        BEDROCK
     }
 
     public static void setupGlobals(ServerLevel world) {

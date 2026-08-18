@@ -159,4 +159,9 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
     public static RandomSource seedSlimeChunk(int chunkX, int chunkZ) {
         return new WorldgenCryptoRandom(chunkX, chunkZ, Globals.Salt.SLIME_CHUNK, 0);
     }
+
+    // The y coordinate is used as the salt, so the floor and the roof layer get their own stream
+    public static RandomSource seedBedrock(int blockX, int blockY, int blockZ) {
+        return new WorldgenCryptoRandom(blockX, blockZ, Globals.Salt.BEDROCK, blockY);
+    }
 }
