@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HyperGaming99 <uploaderuploadertwo@gmail.com>
+Date: Tue, 19 Aug 2025 00:00:00 +0200
+Subject: [PATCH] Do not log POI data mismatch
+
+Plugins that mass-replace blocks (mine resetters, world editors) write POI
+blocks such as cauldrons without going through the POI manager, so the next
+regular block update floods the console with mismatch errors that the server
+owner cannot act on.
+
+diff --git a/net/minecraft/world/entity/ai/village/poi/PoiSection.java b/net/minecraft/world/entity/ai/village/poi/PoiSection.java
+index c708f4517ba1274db7046810044e69da4cc26b89..5cd81de6eec8490882e19745ec2bb5dd96503acc 100644
+--- a/net/minecraft/world/entity/ai/village/poi/PoiSection.java
++++ b/net/minecraft/world/entity/ai/village/poi/PoiSection.java
+@@ -85,7 +85,7 @@ public class PoiSection implements ca.spottedleaf.moonrise.patches.chunk_system.
+                 return false;
+             }
+ 
+-            Util.logAndPauseIfInIde("POI data mismatch: already registered at " + blockPos);
++            if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.poiDataMismatch) Util.logAndPauseIfInIde("POI data mismatch: already registered at " + blockPos); // Leaf - do not log POI data mismatch
+         }
+ 
+         this.records.put(key, record);
+@@ -96,7 +96,7 @@ public class PoiSection implements ca.spottedleaf.moonrise.patches.chunk_system.
+     public void remove(final BlockPos pos) {
+         PoiRecord poiRecord = this.records.remove(SectionPos.sectionRelativePos(pos));
+         if (poiRecord == null) {
+-            LOGGER.error("POI data mismatch: never registered at {}", pos);
++            if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.poiDataMismatch) LOGGER.error("POI data mismatch: never registered at {}", pos); // Leaf - do not log POI data mismatch
+         } else {
+             this.byType.get(poiRecord.getPoiType()).remove(poiRecord);
+             LOGGER.debug("Removed POI of type {} @ {}", LogUtils.defer(poiRecord::getPoiType), LogUtils.defer(poiRecord::getPos));
